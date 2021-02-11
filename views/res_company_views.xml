@@ -13,6 +13,7 @@
                                     <field name="usuario_digifact"/>
                                     <field name="pass_digifact"/>
                                     <field name="nit_digifactfel"/>
+                                    <field name="fel_prueba"/>
                                     <field name="feel_frase_ids">
                                         <tree string="Frases" editable="bottom">
                                             <field name="codigo"/>

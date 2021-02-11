@@ -42,7 +42,7 @@ class AccountMove(models.Model):
         help="Termino de entrega")
     acuse_recibo_sat = fields.Char('Acuse Recibo SAT')
     codigo_sat = fields.Char('Codigo SAT')
-    formato_xml = fields.Binary('XML')
+    formato_xml = fields.Binary('XML Anulado')
     formato_html = fields.Binary('HTML')
     formato_pdf = fields.Binary('PDF')
     response_data1 = fields.Binary('Reponse DATA1')
@@ -451,18 +451,28 @@ class AccountMove(models.Model):
                 logging.warn('RE')
                 # json_test = {"raw": }}
                 js = {
-                    "Username":"GT.000044653948.GEDUCARTEST",
-                    "Password":"1Vp._J6!"
+                    "Username": str(factura.company_id.usuario_digifact),
+                    "Password":str(factura.company_id.pass_digifact)
                     }
 
                 reponsea_api = requests.post("https://felgttestaws.digifact.com.gt/felapiv2/api/login/get_token",json= js,headers=header,verify=False )
+                if factura.company_id.fel_prueba == False:
+                    reponsea_api = requests.post("https://felgtaws.digifact.com.gt/gt.com.fel.api.v2/api/login/get_token",json= js,headers=header,verify=False )
+
+                logging.warn('el json request')
+                logging.warn(reponsea_api.json())
                 token = reponsea_api.json()['Token']
+                logging.warn('el token')
                 logging.warning(token)
                 header_response =	{
         						"Content-Type": "application/xml",
         						"Authorization": str(token)
         					}
                 url3 = "https://felgttestaws.digifact.com.gt/felapiv2/api/FelRequest?NIT="+str(factura.company_id.nit_digifactfel)+"&TIPO=CERTIFICATE_DTE_XML_TOSIGN&FORMAT=PDF"
+                if factura.company_id.fel_prueba == False:
+                    logging.warn('no es prueba')
+                    url3 = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v2/api/FELRequest?NIT="+str(factura.company_id.nit_digifactfel)+"&TIPO=CERTIFICATE_DTE_XML_TOSIGN&FORMAT=PDF"
+
                 response = requests.post(url3, data = xmls, headers = header_response,verify=False)
                 # response_text = r.text()
                 response_json=response.json()
@@ -498,7 +508,7 @@ class AccountMove(models.Model):
 
     def button_draft(self):
         for factura in self:
-            if factura.acuse_recibo_sat and factura.journal_id.feel_tipo_dte and factura.journal_id.feel_codigo_establecimiento:
+            if factura.journal_id.feel_tipo_dte and factura.journal_id.feel_codigo_establecimiento:
                 attr_qname = etree.QName("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation")
                 DTE_NS = "{http://www.sat.gob.gt/dte/fel/0.1.0}"
                 # Nuevo SMAP
@@ -570,12 +580,14 @@ class AccountMove(models.Model):
                     "Username": str(factura.company_id.usuario_digifact),
                     "Password":str(factura.company_id.pass_digifact)
                     }
-
                 reponsea_api = requests.post("https://felgttestaws.digifact.com.gt/felapiv2/api/login/get_token",json= js,headers=header,verify=False )
+                if factura.company_id.fel_prueba == False:
+                    reponsea_api = requests.post("https://felgtaws.digifact.com.gt/gt.com.fel.api.v2/api/login/get_token",json= js,headers=header,verify=False )
                 token = reponsea_api.json()['Token']
 
-
-                url = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v2/api/FELRequest?NIT=" + str(factura.company_id.nit_digifactfel)+"&TIPO=ANULAR_FEL_TOSIGN&FORMAT=XML"
+                url = "https://felgttestaws.digifact.com.gt/felapiv2/api/FelRequest?NIT=" + str(factura.company_id.nit_digifactfel)+"&TIPO=ANULAR_FEL_TOSIGN&FORMAT=XML"
+                if factura.company_id.fel_prueba == False:
+                    url = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v2/api/FELRequest?NIT=" + str(factura.company_id.nit_digifactfel)+"&TIPO=ANULAR_FEL_TOSIGN&FORMAT=XML"
                 # nuevo_json = {
                 #     'llave': str(factura.journal_id.feel_llave_pre_firma),
                 #     'codigo': str(factura.company_id.vat),
@@ -601,6 +613,9 @@ class AccountMove(models.Model):
 
 
                 url3 = "https://felgttestaws.digifact.com.gt/felapiv2/api/FelRequest?NIT="+str(factura.company_id.nit_digifactfel)+"&TIPO=ANULAR_FEL_TOSIGN&FORMAT=PDF"
+                if factura.company_id.fel_prueba == False:
+                    url3 = "https://felgtaws.digifact.com.gt/gt.com.fel.api.v2/api/FELRequest?NIT="+str(factura.company_id.nit_digifactfel)+"&TIPO=ANULAR_FEL_TOSIGN&FORMAT=PDF"
+
                 response = requests.post(url3, data = xmls, headers = header_response,verify=False)
                 # response_text = r.text()
                 logging.warning('ANULAR')
