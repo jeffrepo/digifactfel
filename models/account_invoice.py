@@ -401,8 +401,6 @@ class AccountMove(models.Model):
             # xmls = ET.tostring(GTDocumento, encoding="UTF-8")
             # xmls = xmls.decode("utf-8").replace("&amp;", "&").encode("utf-8")
             # xmls_base64 = base64.b64encode(xmls)
-            # logging.warn(xmls)
-            # for factura in self:
 
                 url = "https://felgttestaws.digifact.com.gt/felapiv2/api/login/get_token"
                 # nuevo_json = {
