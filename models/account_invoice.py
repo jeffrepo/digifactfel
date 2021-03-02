@@ -223,7 +223,7 @@ class AccountMove(models.Model):
                     if factura.journal_id.descripcion_factura:
                         descripcion = linea.name
                     if factura.journal_id.producto_descripcion:
-                        descripcion = str(linea.product_id.name) + ' ' +str(linea.name)    
+                        descripcion = str(linea.product_id.name) + ' ' +str(linea.name)
                     # precio_unitario = (linea.price_unit * (1 - (linea.discount) / 100.0)) if linea.discount > 0 else linea.price_unit
                     precio_unitario = linea.price_unit
                     precio = linea.price_unit * linea.quantity
@@ -377,18 +377,19 @@ class AccountMove(models.Model):
                         }
                         TagReferenciasNota = etree.SubElement(TagComplemento,cno+"ReferenciasNota",datos_referencias,nsmap=NSMAP_REF)
 
-                if factura.currency_id.id != factura.company_id.currency_id.id:
-                    TagAdenda = etree.SubElement(TagSAT,DTE_NS+"Adenda",{})
-                    if factura.comment:
-                        TagComentario = etree.SubElement(TagAdenda, DTE_NS+"Comentario",{})
-                        TagComentario.text = factura.comment
-                    if factura.currency_id.id != factura.company_id.currency_id.id:
-                        TagNitCliente = etree.SubElement(TagAdenda, DTE_NS+"NitCliente",{})
-                        if factura.partner_id.vat:
-                            if '-' in factura.partner_id.vat:
-                                TagNitCliente.text = factura.partner_id.vat.replace('-','')
-                            else:
-                                TagNitCliente.text = factura.partner_id.vat
+
+                # if factura.currency_id.id != factura.company_id.currency_id.id:
+                #     TagAdenda = etree.SubElement(TagSAT,DTE_NS+"Adenda",{})
+                #     if factura.comment:
+                #         TagComentario = etree.SubElement(TagAdenda, DTE_NS+"Comentario",{})
+                #         TagComentario.text = factura.comment
+                #     if factura.currency_id.id != factura.company_id.currency_id.id:
+                #         TagNitCliente = etree.SubElement(TagAdenda, DTE_NS+"NitCliente",{})
+                #         if factura.partner_id.vat:
+                #             if '-' in factura.partner_id.vat:
+                #                 TagNitCliente.text = factura.partner_id.vat.replace('-','')
+                #             else:
+                #                 TagNitCliente.text = factura.partner_id.vat
 
                 # TagTotales.append(TagGranTotal)
 
