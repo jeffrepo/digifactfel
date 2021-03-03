@@ -251,35 +251,39 @@ class AccountMove(models.Model):
                     logging.warn(precio_unitario)
                     taxes = tax_ids.compute_all(precio_unitario-descuento, currency, linea.quantity, linea.product_id, linea.move_id.partner_id)
 
-                    for impuesto in taxes['taxes']:
-                        nombre_impuesto = impuesto['name']
-                        valor_impuesto = impuesto['amount']
-                        if impuesto['name'] == 'IVA por Pagar':
-                            nombre_impuesto = "IVA"
-                            tax_iva = True
+                    if len(linea.tax_ids) > 0 and (factura.currency_id ==  self.env.user.company_id.currency_id or factura.venta):
+                        for impuesto in taxes['taxes']:
+                            logging.warning('PASAS AQIO')
+                            nombre_impuesto = impuesto['name']
+                            valor_impuesto = impuesto['amount']
+                            if impuesto['name'] == 'IVA por Pagar':
+                                nombre_impuesto = "IVA"
+                                tax_iva = True
 
-                        TagImpuesto = etree.SubElement(TagImpuestos,DTE_NS+"Impuesto",{})
-                        TagNombreCorto = etree.SubElement(TagImpuesto,DTE_NS+"NombreCorto",{})
-                        TagNombreCorto.text = nombre_impuesto
-                        TagCodigoUnidadGravable = etree.SubElement(TagImpuesto,DTE_NS+"CodigoUnidadGravable",{})
-                        TagCodigoUnidadGravable.text = "1"
-                        TagMontoGravable = etree.SubElement(TagImpuesto,DTE_NS+"MontoGravable",{})
-                        TagMontoGravable.text = str(precio_subtotal)
-                        TagMontoImpuesto = etree.SubElement(TagImpuesto,DTE_NS+"MontoImpuesto",{})
-                        TagMontoImpuesto.text = '{:.6f}'.format(valor_impuesto)
-                        # monto_gravable_iva += precio_subtotal
-                        # monto_impuesto_iva += valor_impuesto
+                            TagImpuesto = etree.SubElement(TagImpuestos,DTE_NS+"Impuesto",{})
+                            TagNombreCorto = etree.SubElement(TagImpuesto,DTE_NS+"NombreCorto",{})
+                            TagNombreCorto.text = nombre_impuesto
+                            TagCodigoUnidadGravable = etree.SubElement(TagImpuesto,DTE_NS+"CodigoUnidadGravable",{})
+                            TagCodigoUnidadGravable.text = "1"
+                            TagMontoGravable = etree.SubElement(TagImpuesto,DTE_NS+"MontoGravable",{})
+                            TagMontoGravable.text = str(precio_subtotal)
+                            TagMontoImpuesto = etree.SubElement(TagImpuesto,DTE_NS+"MontoImpuesto",{})
+                            TagMontoImpuesto.text = '{:.6f}'.format(valor_impuesto)
+                            # monto_gravable_iva += precio_subtotal
+                            # monto_impuesto_iva += valor_impuesto
 
 
-                        lista_impuestos.append({'nombre': nombre_impuesto, 'monto': valor_impuesto})
+                            lista_impuestos.append({'nombre': nombre_impuesto, 'monto': valor_impuesto})
 
-                    if (tipo in ['FACT','NCRE']) and factura.currency_id !=  self.env.user.company_id.currency_id:
+                    if (tipo in ['FACT','NCRE']) and factura.tipo == 'exportacion':
 
                         TagImpuesto = etree.SubElement(TagImpuestos,DTE_NS+"Impuesto",{})
                         TagNombreCorto = etree.SubElement(TagImpuesto,DTE_NS+"NombreCorto",{})
                         TagNombreCorto.text = "IVA"
                         TagCodigoUnidadGravable = etree.SubElement(TagImpuesto,DTE_NS+"CodigoUnidadGravable",{})
-                        TagCodigoUnidadGravable.text = "2"
+                        TagCodigoUnidadGravable.text = "1"
+                        if factura.amount_tax == 0:
+                            TagCodigoUnidadGravable.text = "2"
                         TagMontoGravable = etree.SubElement(TagImpuesto,DTE_NS+"MontoGravable",{})
                         TagMontoGravable.text = str(precio_subtotal)
                         TagMontoImpuesto = etree.SubElement(TagImpuesto,DTE_NS+"MontoImpuesto",{})
@@ -320,6 +324,7 @@ class AccountMove(models.Model):
                 TagGranTotal.text = str(factura.amount_total)
 
                 if tipo == 'FACT' and factura.currency_id !=  self.env.user.company_id.currency_id:
+                    logging.warning('es exportacion')
                     dato_impuesto = {'NombreCorto': "IVA",'TotalMontoImpuesto': str(0.00)}
                     TagTotalImpuesto = etree.SubElement(TagTotalImpuestos,DTE_NS+"TotalImpuesto",dato_impuesto)
                     TagComplementos = etree.SubElement(TagDatosEmision,DTE_NS+"Complementos",{})
@@ -346,9 +351,9 @@ class AccountMove(models.Model):
                     TagNombreComprador = etree.SubElement(TagExportacion,cex+"NombreComprador",{})
                     TagNombreComprador.text = str(factura.partner_id.name)
                     TagDireccionComprador = etree.SubElement(TagExportacion,cex+"DireccionComprador",{})
-                    TagDireccionComprador.text = str(factura.company_id.street or "")+" "+str(factura.company_id.street2 or "")
+                    TagDireccionComprador.text = str(factura.partner_id.street)
                     TagCodigoComprador = etree.SubElement(TagExportacion,cex+"CodigoComprador",{})
-                    TagCodigoComprador.text = str(factura.company_id.zip) if factura.company_id.zip else "N/A"
+                    TagCodigoComprador.text = str(factura.partner_id.codigo_comprador) if factura.partner_id.codigo_comprador else "N/A"
                     TagOtraReferencia = etree.SubElement(TagExportacion,cex+"OtraReferencia",{})
                     TagOtraReferencia.text = "N/A"
                     TagINCOTERM = etree.SubElement(TagExportacion,cex+"INCOTERM",{})
