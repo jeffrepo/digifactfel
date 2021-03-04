@@ -95,7 +95,7 @@ class AccountMove(models.Model):
                     "NumeroAcceso": str(100000000),
                     "Tipo":tipo
                     }
-                if tipo == 'FACT' and factura.currency_id !=  self.env.user.company_id.currency_id:
+                if tipo == 'FACT' and factura.tipo_factura == 'exportacion':
                     datos_generales['Exp'] = "SI"
 
 
@@ -281,7 +281,7 @@ class AccountMove(models.Model):
                         TagNombreCorto = etree.SubElement(TagImpuesto,DTE_NS+"NombreCorto",{})
                         TagNombreCorto.text = "IVA"
                         TagCodigoUnidadGravable = etree.SubElement(TagImpuesto,DTE_NS+"CodigoUnidadGravable",{})
-                        TagCodigoUnidadGravable.text = "2"
+                        TagCodigoUnidadGravable.text = "1"
                         if factura.amount_tax == 0:
                             TagCodigoUnidadGravable.text = "2"
                         TagMontoGravable = etree.SubElement(TagImpuesto,DTE_NS+"MontoGravable",{})
