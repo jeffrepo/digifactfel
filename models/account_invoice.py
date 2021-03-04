@@ -251,7 +251,7 @@ class AccountMove(models.Model):
                     logging.warn(precio_unitario)
                     taxes = tax_ids.compute_all(precio_unitario-descuento, currency, linea.quantity, linea.product_id, linea.move_id.partner_id)
 
-                    if len(linea.tax_ids) > 0 and (factura.currency_id ==  self.env.user.company_id.currency_id or factura.venta):
+                    if len(linea.tax_ids) > 0 and (factura.currency_id ==  self.env.user.company_id.currency_id or factura.tipo_factura.venta):
                         for impuesto in taxes['taxes']:
                             logging.warning('PASAS AQIO')
                             nombre_impuesto = impuesto['name']
@@ -275,7 +275,7 @@ class AccountMove(models.Model):
 
                             lista_impuestos.append({'nombre': nombre_impuesto, 'monto': valor_impuesto})
 
-                    if (tipo in ['FACT','NCRE']) and factura.tipo == 'exportacion':
+                    if (tipo in ['FACT','NCRE']) and factura.tipo_factura == 'exportacion':
 
                         TagImpuesto = etree.SubElement(TagImpuestos,DTE_NS+"Impuesto",{})
                         TagNombreCorto = etree.SubElement(TagImpuesto,DTE_NS+"NombreCorto",{})
