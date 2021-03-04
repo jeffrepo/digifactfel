@@ -275,7 +275,7 @@ class AccountMove(models.Model):
 
                             lista_impuestos.append({'nombre': nombre_impuesto, 'monto': valor_impuesto})
 
-                    if (tipo in ['FACT','NCRE']) and factura.tipo_factura == 'exportacion':
+                    if (tipo in ['FACT','NCRE']) and and factura.currency_id !=  self.env.user.company_id.currency_id:
 
                         TagImpuesto = etree.SubElement(TagImpuestos,DTE_NS+"Impuesto",{})
                         TagNombreCorto = etree.SubElement(TagImpuesto,DTE_NS+"NombreCorto",{})
@@ -323,7 +323,7 @@ class AccountMove(models.Model):
                 TagGranTotal = etree.SubElement(TagTotales,DTE_NS+"GranTotal",{})
                 TagGranTotal.text = str(factura.amount_total)
 
-                if tipo == 'FACT' and factura.currency_id !=  self.env.user.company_id.currency_id:
+                if tipo == 'FACT' and (factura.currency_id !=  self.env.user.company_id.currency_id or factura.tipo_factura == 'exportacion'):
                     logging.warning('es exportacion')
                     dato_impuesto = {'NombreCorto': "IVA",'TotalMontoImpuesto': str(0.00)}
                     TagTotalImpuesto = etree.SubElement(TagTotalImpuestos,DTE_NS+"TotalImpuesto",dato_impuesto)
