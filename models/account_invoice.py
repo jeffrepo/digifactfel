@@ -281,7 +281,7 @@ class AccountMove(models.Model):
                         TagNombreCorto = etree.SubElement(TagImpuesto,DTE_NS+"NombreCorto",{})
                         TagNombreCorto.text = "IVA"
                         TagCodigoUnidadGravable = etree.SubElement(TagImpuesto,DTE_NS+"CodigoUnidadGravable",{})
-                        TagCodigoUnidadGravable.text = "1"
+                        TagCodigoUnidadGravable.text = "2"
                         if factura.amount_tax == 0:
                             TagCodigoUnidadGravable.text = "2"
                         TagMontoGravable = etree.SubElement(TagImpuesto,DTE_NS+"MontoGravable",{})
