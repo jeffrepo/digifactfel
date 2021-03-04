@@ -251,7 +251,7 @@ class AccountMove(models.Model):
                     logging.warn(precio_unitario)
                     taxes = tax_ids.compute_all(precio_unitario-descuento, currency, linea.quantity, linea.product_id, linea.move_id.partner_id)
 
-                    if len(linea.tax_ids) > 0 and (factura.currency_id ==  self.env.user.company_id.currency_id or factura.tipo_factura == 'venta'):
+                    if len(linea.tax_ids) > 0:
                         for impuesto in taxes['taxes']:
                             logging.warning('PASAS AQIO')
                             nombre_impuesto = impuesto['name']
