@@ -275,7 +275,7 @@ class AccountMove(models.Model):
 
                             lista_impuestos.append({'nombre': nombre_impuesto, 'monto': valor_impuesto})
 
-                    if (tipo in ['FACT','NCRE']) and and factura.currency_id !=  self.env.user.company_id.currency_id:
+                    if (tipo in ['FACT','NCRE']) and factura.currency_id !=  self.env.user.company_id.currency_id:
 
                         TagImpuesto = etree.SubElement(TagImpuestos,DTE_NS+"Impuesto",{})
                         TagNombreCorto = etree.SubElement(TagImpuesto,DTE_NS+"NombreCorto",{})
