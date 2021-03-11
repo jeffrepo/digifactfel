@@ -112,7 +112,7 @@ class AccountMove(models.Model):
                     "CorreoEmisor": str(factura.company_id.email) or "",
                     "NITEmisor": str(nit_company),
                     # "NITEmisor": '103480307',
-                    "NombreComercial": factura.company_id.name,
+                    "NombreComercial": factura.journal_id.feel_nombre_comercial,
                     "NombreEmisor": factura.company_id.name
                 }
 
